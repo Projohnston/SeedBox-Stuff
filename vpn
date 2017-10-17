@@ -1,0 +1,69 @@
+#!/bin/bash
+#/home/seedbox/documents/scripts/vpn
+
+OLDIP=$(curl -s icanhazip.com)
+OPENVPNPROCESS=$(ps -e | grep openvpn)
+
+case "$1" in
+	start)
+		echo "Starting OpenVPN Script..."
+		#Will Fix Later.
+		#if [ $? -eq 0 ]; then
+		#	killall openvpn
+		#fi
+		killall openvpn
+		killall rtorrent
+		sudo screen -d -m sudo openvpn /home/seedbox/documents/openvpn/Sweden.ovpn
+		sleep 20
+		NEWIP=$(curl -s icanhazip.com)
+		if [ $OLDIP == $NEWIP ]; then
+			echo "DANGER!!!"
+			echo Seedbox's old IP address was: $OLDIP
+                        echo Seedbox's new IP address is: $NEWIP
+			echo "Something went wrong and couldn't establish connection with Sweden Server"
+			echo "Trying Netherlands server..."
+			sudo screen -d -m sudo openvpn /home/seedbox/documents/openvpn/Netherlands.ovpn
+			if [ "$oldip" == $(curl -s icanhazip.com) ]; then
+				echo "DANGER!!!"
+				echo Seedbox's old IP address was: $OLDIP
+	                        echo Seedbox's new IP address is: $NEWIP
+				echo "Still could not connect..."
+				echo "Killing Openvpn and any torrent clients..."
+				killall openvpn
+				killall transmission
+				killall transmission-daemon
+				killall rtorrent
+				killall rtorrent-cli
+				killall screen
+				exit 1
+			fi
+		else
+			#/usr/local/bin/route-up.sh	Will fix later
+			echo Seedbox's old IP address was: $OLDIP
+			echo Seedbox's new IP address is: $NEWIP
+		fi
+		;;
+	stop)
+		echo "Stopping all OpenVPN connections..."
+		killall openvpn
+		echo "Stopping any torrent clients..."
+		killall transmission-cli
+		killall transmission-daemon
+		killall rtorrent
+		killall rtorrent-cli
+		killall screen
+		#/usr/local/bin/down.sh #To be fixed later
+		;;
+	ip)
+		echo Seedbox current IP address is: $(curl -s icanhazip.com)
+		;;
+	restart)
+		/usr/local/bin/vpn stop
+		/usr/local/bin/vpn start
+		;;
+	*)
+		echo "Usage: /bin/local/bash/vpn {start|stop|restart|ip}"
+		;;
+		esac
+exit 0
+
