@@ -1,6 +1,13 @@
 #!/bin/bash
 #/home/seedbox/documents/scripts/vpn
 
+########################################################################################################
+### This script is very antiquated and presumably not working and contains many security oversights, ###
+##### seeing as how I was only 14 when writing this and had a very tenuous grasp on networking and #####
+#### iptables as a whole, so don't use this script. Just keeping this repository for "nostalgia" I #####
+######################################### suppose. #####################################################
+########################################################################################################
+
 OLDIP=$(curl -s icanhazip.com)
 OPENVPNPROCESS=$(ps -e | grep openvpn)
 
